@@ -1905,10 +1905,13 @@ export default function ChatPage() {
         });
 
         if (Date.now() - startedAt > CHAT_RECOVERY_MAX_WAIT_MS) {
+          // Recovery polling timed out, but the durable backend request may still
+          // be processing. A transport/recovery timeout must not be rendered as
+          // a server-side request failure.
           updateRequestMessage(streamId, {
-            requestStatus: CHAT_REQUEST_UI_STATUS.FAILED,
-            statusText: CHAT_PROGRESS_TEXT.failed,
-            provisional: false,
+            requestStatus: CHAT_REQUEST_UI_STATUS.PROCESSING,
+            statusText: CHAT_PROGRESS_TEXT.processing,
+            provisional: true,
             retryText: userText,
           });
           return false;
